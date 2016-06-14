@@ -96,6 +96,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
     //Where did this come from?
     private static final int CROP_CAMERA = 100;
 
+    private int resizeFactor;				// resize factor of the image to reduce the dimensions while maintaining the image aspect ratio
     private int mQuality;                   // Compression quality hint (0-100: 0=low quality & high compression, 100=compress of max quality)
     private int targetWidth;                // desired width of the image
     private int targetHeight;               // desired height of the image
@@ -138,8 +139,9 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
             this.targetWidth = 0;
             this.encodingType = JPEG;
             this.mediaType = PICTURE;
-            this.mQuality = 50;
-
+            this.mQuality = 80;
+            this.resizeFactor = 80;
+            
             //Take the values from the arguments if they're not already defined (this is tricky)
             this.destType = args.getInt(1);
             this.srcType = args.getInt(2);
@@ -151,7 +153,10 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
             this.allowEdit = args.getBoolean(7);
             this.correctOrientation = args.getBoolean(8);
             this.saveToPhotoAlbum = args.getBoolean(9);
-
+            
+            // custom argument added by primesoft
+            this.resizeFactor = args.getInt(12);
+            
             // If the user specifies a 0 or smaller width/height
             // make it -1 so later comparisons succeed
             if (this.targetWidth < 1) {
@@ -551,9 +556,11 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
                 CompressFormat compressFormat = encodingType == JPEG ?
                         CompressFormat.JPEG :
                         CompressFormat.PNG;
-
+                bitmap = Bitmap.createScaledBitmap(bitmap,(int)(bitmap.getWidth()*this.resizeFactor/100), (int)(bitmap.getHeight()*this.resizeFactor/100), true);
                 bitmap.compress(compressFormat, this.mQuality, os);
                 os.close();
+                
+                
 
                 // Restore exif data to file
                 if (this.encodingType == JPEG) {
