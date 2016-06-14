@@ -86,7 +86,7 @@ static NSString* toBase64(NSData* data) {
     pictureOptions.usesGeolocation = NO;
     
     // custom argument added by primesoft to resize image
-    pictureOptions.resizeFactor=[[command argumentAtIndex:12 withDefault:@(80)]];
+    pictureOptions.resizeFactor=[command argumentAtIndex:12 withDefault:@(80)];
     return pictureOptions;
 }
 
@@ -357,7 +357,7 @@ static NSString* toBase64(NSData* data) {
         case EncodingTypeJPEG:
         {
             if ((options.allowsEditing == NO) && (options.targetSize.width <= 0) && (options.targetSize.height <= 0) && (options.correctOrientation == NO) && (([options.quality integerValue] == 100) || (options.sourceType != UIImagePickerControllerSourceTypeCamera))){
-                image = [self imageWithImage:image scaledImage:CGSizeMake(image.size.width/[options.resizeFactor floatValue]/100.0f, image.size.height/[options.resizeFactor floatValue]/100.0f)];
+                image = [[self class] imageWithImage:image scaledToSize:CGSizeMake(image.size.width/[options.resizeFactor floatValue]/100.0f, image.size.height/[options.resizeFactor floatValue]/100.0f)];
                 // use image unedited as requested , don't resize
                 data = UIImageJPEGRepresentation(image, 1.0);
             } else {
