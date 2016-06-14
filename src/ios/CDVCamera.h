@@ -60,6 +60,11 @@ typedef NSUInteger CDVMediaType;
 @property (assign) BOOL usesGeolocation;
 @property (assign) BOOL cropToSize;
 
+// custom argument added by primesoft
+@property (assign) NSNumber* resizeFactor;
+
+
+
 + (instancetype) createFromTakePictureArguments:(CDVInvokedUrlCommand*)command;
 
 @end
