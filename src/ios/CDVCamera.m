@@ -85,6 +85,8 @@ static NSString* toBase64(NSData* data) {
     pictureOptions.popoverSupported = NO;
     pictureOptions.usesGeolocation = NO;
     
+    // custom argument added by primesoft to resize image
+    pictureOptions.resizeFactor=[[command argumentAtIndex:12 withDefault:@(80)]];
     return pictureOptions;
 }
 
@@ -355,6 +357,7 @@ static NSString* toBase64(NSData* data) {
         case EncodingTypeJPEG:
         {
             if ((options.allowsEditing == NO) && (options.targetSize.width <= 0) && (options.targetSize.height <= 0) && (options.correctOrientation == NO) && (([options.quality integerValue] == 100) || (options.sourceType != UIImagePickerControllerSourceTypeCamera))){
+                image = [self imageWithImage:image scaledImage:CGSizeMake(image.size.width/[options.resizeFactor floatValue]/100.0f, image.size.height/[options.resizeFactor floatValue]/100.0f)];
                 // use image unedited as requested , don't resize
                 data = UIImageJPEGRepresentation(image, 1.0);
             } else {
@@ -385,6 +388,17 @@ static NSString* toBase64(NSData* data) {
     };
     
     return data;
+}
+
++ (UIImage*)imageWithImage:(UIImage*)image
+              scaledToSize:(CGSize)newSize;
+{
+    UIGraphicsBeginImageContext( newSize );
+    [image drawInRect:CGRectMake(0,0,newSize.width,newSize.height)];
+    UIImage* newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return newImage;
 }
 
 - (NSString*)tempFilePath:(NSString*)extension
